@@ -1,5 +1,6 @@
 'use client';
 
+import type { PromptSummary } from '@/core/domain/prompts/prompt.entity';
 import {
   Plus as AddIcon,
   ArrowLeftToLine,
@@ -9,17 +10,12 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation';
 import { startTransition, useState } from 'react';
 import { Logo } from '../logo';
+import { PromptList } from '../prompts';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 
-type Prompt = {
-  id: string;
-  title: string;
-  content: string;
-};
-
 export type SidebarContentProps = {
-  prompts: Prompt[];
+  prompts: PromptSummary[];
 };
 
 export const SidebarContent = ({ prompts }: SidebarContentProps) => {
@@ -111,19 +107,11 @@ export const SidebarContent = ({ prompts }: SidebarContentProps) => {
                 Novo prompt
               </Button>
             </div>
-
-            {prompts.map((prompt) => (
-              <div
-                key={prompt.id}
-                className="mb-2 p-2 bg-gray-700 rounded-lg hover:bg-gray-600 cursor-pointer"
-              >
-                <h3 className="text-gray-100 font-semibold">{prompt.title}</h3>
-                <p className="text-gray-400 text-sm">{prompt.content}</p>
-              </div>
-            ))}
           </section>
         </>
       )}
+
+      <PromptList prompts={prompts} />
     </aside>
   );
 };
