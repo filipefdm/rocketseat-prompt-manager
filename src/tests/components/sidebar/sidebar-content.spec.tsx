@@ -89,6 +89,30 @@ describe('SidebarContent', () => {
       expect(expandButton).not.toBeInTheDocument();
     });
 
+    it('deveria expandir ao clicar no botão de expandir', async () => {
+      makeSut();
+
+      const collapseButton = screen.getByRole('button', {
+        name: /minimizar sidebar/i,
+      });
+
+      await user.click(collapseButton);
+
+      const expandButton = screen.getByRole('button', {
+        name: /expandir sidebar/i,
+      });
+
+      await user.click(expandButton);
+
+      const collapseButtonAfterExpand = screen.getByRole('button', {
+        name: /minimizar sidebar/i,
+      });
+      expect(collapseButtonAfterExpand).toBeInTheDocument();
+      expect(
+        screen.getByRole('navigation', { name: /lista de prompts/i })
+      ).toBeInTheDocument();
+    });
+
     it('deveria contrair e mostrar o botão de expandir', async () => {
       makeSut();
 
@@ -162,6 +186,36 @@ describe('SidebarContent', () => {
       await user.clear(searchInput);
       const lastClearCall = pushMock.mock.calls.at(-1);
       expect(lastClearCall?.[0]).toBe('/');
+    });
+
+    it('deveria submeter o form ao digitar no campo de busca', async () => {
+      const submitSpy = jest
+        .spyOn(HTMLFormElement.prototype, 'requestSubmit')
+        .mockImplementation(() => undefined);
+      makeSut();
+
+      const searchInput = screen.getByPlaceholderText('Buscar prompts...');
+
+      await user.type(searchInput, 'Prompt 1');
+
+      expect(submitSpy).toHaveBeenCalled();
+
+      submitSpy.mockRestore();
+    });
+
+    it('deveria submeter automaticamente ao montar quando houver query', async () => {
+      const submitSpy = jest
+        .spyOn(HTMLFormElement.prototype, 'requestSubmit')
+        .mockImplementation(() => undefined);
+
+      const text = 'inicial';
+      const searchParams = new URLSearchParams(`q=${text}`);
+      mockedSearchParams = searchParams;
+      makeSut();
+
+      expect(submitSpy).toHaveBeenCalled();
+
+      submitSpy.mockRestore();
     });
   });
 
